@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resultados de Simulación</title>
+    {% load static %}
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+      .container {
+        max-width: 1000px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #0056b3;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      /* --- Estilos para la tabla y las celdas --- */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #0056b3;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      /* --- Estilo para la celda de imagen y control de tamaño de imagen --- */
+      .image-cell {
+        text-align: center; /* Centra la imagen dentro de la celda */
+        vertical-align: middle; /* Alinea verticalmente en el medio */
+        width: 160px; /* Ancho fijo para la celda si lo deseas */
+      }
+      .image-cell img {
+        max-width: 150px; /* Controla el tamaño máximo de la imagen */
+        height: auto; /* Mantiene la proporción de la imagen */
+        display: block; /* La convierte en un bloque para aplicar margin: auto */
+        margin: auto; /* Centra la imagen horizontalmente */
+        border: 1px solid #eee; /* Borde sutil para las imágenes */
+        border-radius: 4px; /* Bordes ligeramente redondeados */
+      }
+
+      .no-results {
+        text-align: center;
+        color: #888;
+        padding: 20px;
+      }
+      .error-message {
+        color: red;
+        text-align: center;
+        font-weight: bold;
+        margin-top: 20px;
+      }
+
+      /* --- Estilos para los enlaces de acción --- */
+      .action-links {
+        display: flex; /* Usa flexbox para alinear los enlaces */
+        justify-content: center; /* Centra los enlaces horizontalmente */
+        gap: 30px; /* Espacio entre los enlaces */
+        margin-top: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #eee; /* Una línea sutil para separar de la tabla */
+      }
+      .back-link {
+        text-decoration: none;
+        color: #0056b3;
+        font-weight: bold;
+        padding: 8px 15px;
+        border: 1px solid #0056b3;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      .back-link:hover {
+        background-color: #0056b3;
+        color: white;
+      }
+
+      /* --- Estilos para los mensajes de Django (éxito/error) --- */
+      .messages {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 20px;
+      }
+      .message {
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        font-weight: bold;
+      }
+      .message.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .message.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Resultados de Simulación Anteriores</h1>
+
+      {# Bloque para mostrar mensajes de Django #} {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+        <li
+          {%
+          if
+          message.tags
+          %}
+          class="message {{ message.tags }}"
+          {%
+          endif
+          %}
+        >
+          {{ message }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% if error_message %}
+      <p class="error-message">{{ error_message }}</p>
+      {% elif results %}
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha/Hora</th>
+            <th>Inclinación</th>
+            <th>Rumbo</th>
+            <th>Longitud Riel</th>
+            <th>Masa CanSat</th>
+            <th>Coef. Arrastre</th>
+            <th>Tiempo Encendido</th>
+            <th>Empuje Promedio</th>
+            <th>Elevación</th>
+            <th>Apogeo (m)</th>
+            <th>Gráfica</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for result in results %}
+          <tr>
+            <td>{{ result.0 }}</td>
+            {# Fecha/Hora #}
+            <td>{{ result.1 }}</td>
+            {# Inclinación #}
+            <td>{{ result.2 }}</td>
+            {# Rumbo #}
+            <td>{{ result.3 }}</td>
+            {# Longitud Riel #}
+            <td>{{ result.4 }}</td>
+            {# Masa CanSat #}
+            <td>{{ result.5 }}</td>
+            {# Coef. Arrastre #}
+            <td>{{ result.6 }}</td>
+            {# Tiempo Encendido #}
+            <td>{{ result.7 }}</td>
+            {# Empuje Promedio #}
+            <td>{{ result.8 }}</td>
+            {# Elevación #}
+            <td>{{ result.9|floatformat:"2" }}</td>
+            {# Apogeo #}
+            <td class="image-cell">
+              {% if result.10 %} {# URL de la Gráfica #}
+              <img src="{% static result.10 %}" alt="Gráfica de Simulación" />
+              {% else %} N/A {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="no-results">No se encontraron resultados de simulación.</p>
+      {% endif %} {# --- Sección de enlaces de acción --- #}
+      <div class="action-links">
+        <a href="{% url 'cansat_form' %}" class="back-link"
+          >← Volver al Formulario de Simulación</a
+        >
+
+        {# Enlace para limpiar la base de datos con confirmación JavaScript #}
+        <a href="#" class="back-link" onclick="confirmCleanDB(); return false;"
+          >← Limpiar Base de Datos</a
+        >
+      </div>
+    </div>
+
+    <script>
+      // Función JavaScript para la confirmación de limpieza de la base de datos
+      function confirmCleanDB() {
+        if (
+          confirm(
+            "¿Estás seguro de que deseas limpiar TODA la base de datos de resultados de simulación? Esta acción es irreversible."
+          )
+        ) {
+          window.location.href = "{% url 'limpiar_db' %}"; // Redirige a la URL de limpieza
+        }
+      }
+    </script>
+  </body>
+</html>

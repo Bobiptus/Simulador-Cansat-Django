@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Captura de Valores para Cansat</title>
+    {% load static %}
+    <style>
+      /* Tus estilos CSS aquí */
+      body {
+        font-family: sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+      .container {
+        max-width: 700px;
+        margin: 30px auto;
+        padding: 25px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        background-color: #fff;
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 25px;
+      }
+      .form-group {
+        margin-bottom: 18px;
+      }
+      label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: bold;
+        color: #34495e;
+      }
+      input[type="number"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 1rem;
+      }
+      .btn-primary {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        margin-top: 25px;
+        transition: background-color 0.3s ease;
+      }
+      .btn-primary:hover {
+        background-color: #2980b9;
+      }
+      .result-section {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #e8f7ef;
+        border: 1px solid #d4edda;
+        border-radius: 6px;
+        color: #155724;
+      }
+      .error-message {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 6px;
+        color: #721c24;
+      }
+      .simulation-graph {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-top: 20px;
+        border: 1px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Captura de valores para Cansat</h1>
+
+      <form id="cansat-form" method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label for="user_inclination"
+            >Inclinación del lanzador (grados):</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            id="user_inclination"
+            name="user_inclination"
+            required
+            step="any"
+            value="{{ user_inclination|default:'' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="user_heading">Heading del lanzador (grados):</label>
+          <input
+            type="number"
+            class="form-control"
+            id="user_heading"
+            name="user_heading"
+            required
+            step="any"
+            value="{{ user_heading|default:'' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="user_rail_length">Longitud del riel (m):</label>
+          <input
+            type="number"
+            class="form-control"
+            id="user_rail_length"
+            name="user_rail_length"
+            required
+            step="any"
+            value="{{ user_rail_length|default:'' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="user_cansat_mass">Masa del Cansat (kg):</label>
+          <input
+            type="number"
+            class="form-control"
+            id="user_cansat_mass"
+            name="user_cansat_mass"
+            required
+            step="any"
+            value="{{ user_cansat_mass|default:'' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="user_drag_coeff">Coeficiente de arrastre:</label>
+          <input
+            type="number"
+            class="form-control"
+            id="user_drag_coeff"
+            name="user_drag_coeff"
+            required
+            step="any"
+            value="{{ user_drag_coeff|default:'' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="user_burn_time">Tiempo de combustión (s):</label>
+          <input
+            type="number"
+            class="form-control"
+            id="user_burn_time"
+            name="user_burn_time"
+            required
+            step="any"
+            value="{{ user_burn_time|default:'' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="user_avg_thrust">Empuje promedio (N):</label>
+          <input
+            type="number"
+            class="form-control"
+            id="user_avg_thrust"
+            name="user_avg_thrust"
+            required
+            step="any"
+            value="{{ user_avg_thrust|default:'' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="user_elevation">Elevación del lanzador (grados):</label>
+          <input
+            type="number"
+            class="form-control"
+            id="user_elevation"
+            name="user_elevation"
+            required
+            step="any"
+            value="{{ user_elevation|default:'' }}"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          Ejecutar Simulación
+        </button>
+      </form>
+
+      {% if error_message %}
+      <div class="error-message">
+        <h3>Error:</h3>
+        <p>{{ error_message }}</p>
+      </div>
+      {% endif %} {% if simulation_message %}
+      <div class="result-section">
+        <h3>{{ simulation_message }}</h3>
+        {% if apogee is not None %}
+        <p>Apogeo Alcanzado: <strong>{{ apogee }} metros</strong></p>
+        {% else %}
+        <p>No se pudo determinar el apogeo.</p>
+        {% endif %} {% if graph_image_url %}
+        <h4>Gráfica de Trayectoria:</h4>
+        <img
+          src="{{ graph_image_url }}"
+          alt="Gráfica de Simulación de Cansat"
+          class="simulation-graph"
+        />
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+    <div class="container">
+      <h1>Simulador de Vuelo de CanSat</h1>
+
+      <p class="text-center">
+        <a href="{% url 'consult_results' %}" class="btn btn-secondary"
+          >Ver Simulaciones Anteriores</a
+        >
+      </p>
+    </div>
+  </body>
+</html>

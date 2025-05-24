@@ -1,0 +1,22 @@
+# Python
+*.pyc
+__pycache__/
+venv/  
+.env   
+
+# Django
+*.log
+*.sqlite3
+db.sqlite3
+media/ 
+staticfiles/
+local_settings.py
+
+# Tu base de datos específica de simulación
+simulation_results.db
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
